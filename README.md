@@ -157,6 +157,10 @@ def valid_actions(grid, current_node):
 
     return valid_actions
 ```
+**Path 1**
+![Path 1 ](https://github.com/lorenzoajt/3DMotionPlanning/blob/master/misc/path1.png)
+**Path 2**
+![Path 2 ](https://github.com/lorenzoajt/3DMotionPlanning/blob/master/misc/path2.png)
 
 6. Cull waypoints from the path you determine using search.
 
@@ -193,7 +197,10 @@ def prune_path(path):
     return pruned_path
 ```
 
-
+**Pruned path 1**
+![Pruned path 1 ](https://github.com/lorenzoajt/3DMotionPlanning/blob/master/misc/pruned_path1.png)
+**Pruned path 2**
+![Path 2 ](https://github.com/lorenzoajt/3DMotionPlanning/blob/master/misc/pruned2.png)
 
 
 
