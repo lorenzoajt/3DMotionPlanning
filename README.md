@@ -1,8 +1,9 @@
-# 3DMotionPlanning
+# 3DMotionPlanning :bee:
+
 Path planning algorithm for a quadcopter in a 3D environment.
 ![Image of drone flying](https://github.com/lorenzoajt/3DMotionPlanning/blob/master/misc/flying.png)
 
-## Starter code explanation
+## Starter code explanation :shipit:
 The first task in this project is to explain what's different about motion_planning.py from the backyard_flyer_solution.py script, and how the functions provided in planning_utils.py work.
 
 1. The first thing to notice is that there is an extra state called PLANNING. Planning state begins after the drone is armed as stated in state_callback() function.
@@ -84,6 +85,8 @@ grid_start = (int(start[0]), int(start[1]))
 ```
 
 4. Set goal position as some arbitrary position on the grid given any geodetic coordinates (latitude, longitude)
+
+:rotating_light: **Here you can set geo_grid_goal to any latitude/longitude coordinate** :rotating_light:	
 
 ```python
 geo_grid_goal = (-122.397545, 37.793745,  0.0)
