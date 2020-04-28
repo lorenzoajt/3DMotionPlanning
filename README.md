@@ -1,4 +1,4 @@
-# 3DMotionPlanning :bee:
+# 3DMotionPlanning :helicopter:
 
 Path planning algorithm for a quadcopter in a 3D environment.
 ![Image of drone flying](https://github.com/lorenzoajt/3DMotionPlanning/blob/master/misc/flying.png)
