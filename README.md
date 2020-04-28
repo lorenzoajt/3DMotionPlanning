@@ -1,5 +1,6 @@
 # 3DMotionPlanning
 Path planning algorithm for a quadcopter in a 3D environment.
+![Image of drone flying](https://github.com/lorenzoajt/3DMotionPlanning/blob/master/misc/flying.png)
 
 ## Starter code explanation
 The first task in this project is to explain what's different about motion_planning.py from the backyard_flyer_solution.py script, and how the functions provided in planning_utils.py work.
@@ -52,6 +53,9 @@ print(waypoints)
 #Output
 #[[0, 0, 5, 0], [0, 1, 5, 0], [1, 1, 5, 0], [1, 2, 5, 0], [2, 2, 5, 0], [2, 3, 5, 0], [3, 3, 5, 0], [3, 4, 5, 0], [4, 4, 5, 0], [4, 5, 5, 0], [5, 5, 5, 0], [5, 6, 5, 0], [6, 6, 5, 0], [6, 7, 5, 0], [7, 7, 5, 0], [7, 8, 5, 0], [8, 8, 5, 0], [8, 9, 5, 0], [9, 9, 5, 0], [9, 10, 5, 0], [10, 10, 5, 0]]
 ````
+
+![Image of first path](https://github.com/lorenzoajt/3DMotionPlanning/blob/master/misc/first.png)
+
 ## Implementing the Path Planning Algorithm
 1. Here you should read the first line of the csv file, extract lat0 and lon0 as floating point values and use the self.set_home_position() method to set global home. The method used was: 
 ```python
