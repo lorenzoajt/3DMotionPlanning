@@ -60,48 +60,135 @@ with open('colliders.csv', 'r') as file:
     lat, lon = header.split(",")
     lat0 = float(lat.strip().split(' ')[1])
     lon0 = float(lon.strip().split(' ')[1])
-print("North offset = {0}, east offset = {1}".format(north_offset, east_offset))
-#Output:
-#North offset = -316, east offset = -445
+self.set_home_position(lon0, lat0, 0)
+home_pos = (lon0, lat0, 0)
 
 ```
 
 2. Determine your local position relative to global home 
 ```python
-    #set home position to (lon0, lat0, 0)
-		global_home = self.set_home_position(lon0, lat0, 0)
+geo_curr_coordinates = self.global_position
+# TODO: convert to current local position using global_to_local()
+local_position_ned = global_to_local(geo_curr_coordinates, home_pos)
 
-		#retrieve current global position
-		global_position = self.global_position
-
-		#convert to current local position using global_to_local()
-		local_position_ned = global_to_local(global_position, global_home)
 ````
 3. In the starter code, the start point for planning is hardcoded as map center. Change this to be your current local position.
 
 ```python
-grid_start = (local_position_ned[0] - north_offset, local_position_ned[1] - east_offset)
+start = (local_position_ned[0]-north_offset, local_position_ned[1]-east_offset)
+grid_start = (int(start[0]), int(start[1]))
 ```
 
 4. Set goal position as some arbitrary position on the grid given any geodetic coordinates (latitude, longitude)
 
 ```python
-grid_goal_geodetic = (lat, lon, 0)
-grid_goal_ned = global_to_local(grid_goal_geodetic, global_home)
+geo_grid_goal = (-122.397545, 37.793745,  0.0)
+goal_ned = global_to_local(geo_grid_goal, home_pos)
+goal = (goal_ned[0]-north_offset, goal_ned[1]-east_offset)
+grid_goal = (int(goal[0]), int(goal[1]))
 ```
-I found more interesting setting a new random point.
+
+5. Modify the code in planning_utils() to update the A* implementation to include diagonal motions on the grid that have a cost of sqrt(2), but more creative solutions are welcome. In your writeup, explain the code you used to accomplish this step. The changes were in the Action class and valid_actions() function. 
+
+Basically I just added DIAG_NW, DIAG_NE, DIAG_SW and DIAG_SE including their deltas and the cost which was for all square root of 2.
+```python
+class Action(Enum):
+    """
+    An action is represented by a 3 element tuple.
+
+    The first 2 values are the delta of the action relative
+    to the current grid position. The third and final value
+    is the cost of performing the action.
+    """
+
+    WEST = (0, -1, 1)
+    EAST = (0, 1, 1)
+    NORTH = (-1, 0, 1)
+    SOUTH = (1, 0, 1)
+
+    DIAG_NW = (-1, -1, np.sqrt(2))
+    DIAG_NE = (-1, 1, np.sqrt(2))
+    DIAG_SW = (1, -1, np.sqrt(2))
+    DIAG_SE = (1, 1, np.sqrt(2))
+
+    @property
+    def cost(self):
+        return self.value[2]
+
+    @property
+    def delta(self):
+        return (self.value[0], self.value[1])
+	
+````
+Then I added them to a list of valid actions and removed them if one of them collided with an object or got out of the map. 
 
 ```python
-north_min = np.floor(np.min(data[:, 0] - data[:, 3]))
-north_max = np.ceil(np.max(data[:, 0] + data[:, 3]))
+def valid_actions(grid, current_node):
+    """
+    Returns a list of valid actions given a grid and current node.
+    """
+    valid_actions = list(Action)
+    n, m = grid.shape[0] - 1, grid.shape[1] - 1
+    x, y = current_node
 
+    # check if the node is off the grid or
+    # it's an obstacle
 
-east_min = np.floor(np.min(data[:, 1] - data[:, 4]))
-east_max = np.ceil(np.max(data[:, 1] + data[:, 4]))
+    if x - 1 < 0 or grid[x - 1, y] == 1:
+        valid_actions.remove(Action.NORTH)
+    if x + 1 > n or grid[x + 1, y] == 1:
+        valid_actions.remove(Action.SOUTH)
+    if y - 1 < 0 or grid[x, y - 1] == 1:
+        valid_actions.remove(Action.WEST)
+    if y + 1 > m or grid[x, y + 1] == 1:
+        valid_actions.remove(Action.EAST)
+    if x - 1 < 0 or y - 1 < 0 or grid[x-1, y-1]  == 1:
+        valid_actions.remove(Action.DIAG_NW)
+    if x -1 < 0 or y + 1 > m or grid[x-1, y+1] == 1:
+        valid_actions.remove(Action.DIAG_NE)
+    if x + 1 > n or y - 1 < 0 or grid[x+1, y-1]  == 1:
+        valid_actions.remove(Action.DIAG_SW)
+    if x + 1 > n or y +1 > m or grid[x+1, y+1] == 1:
+        valid_actions.remove(Action.DIAG_SE)
 
-grid_goal = (random.randrange(-north_min, north_max), random.randrange(-east_min, east_max))
-````
-5. Modify the code in planning_utils() to update the A* implementation to include diagonal motions on the grid that have a cost of sqrt(2), but more creative solutions are welcome. In your writeup, explain the code you used to accomplish this step.
+    return valid_actions
+```
+
+6. Cull waypoints from the path you determine using search.
+
+The method used was collinearity check.
+First we need to calculate the determinant of 3 points and check if the result is 0 for collinearity.
+```python
+def collinearity_check(p1, p2, p3): 
+    collinear = False
+    # TODO: Calculate the determinant of the matrix using integer arithmetic 
+    det = p1[0]*(p2[1] - p3[1]) + p2[0]*(p3[1] - p1[1]) + p3[0]*(p1[1] - p2[1])
+    # TODO: Set collinear to True if the determinant is equal to zero
+    
+    if det == 0:
+        collinear = True
+
+    return collinear
+```
+Then all the points in the path are passed trough the prune_path() function which uses previous collinearity_check to eliminate all innecesary waypoints.
+
+```python
+def prune_path(path):
+    pruned_path = [p for p in path]
+    
+    i = 0
+    while i < len(pruned_path) - 2:
+        p1 = pruned_path[i]
+        p2 = pruned_path[i+1]
+        p3 = pruned_path[i+2]
+        
+        if collinearity_check(p1, p2, p3):
+            pruned_path.remove(pruned_path[i+1])
+        else:
+            i += 1
+    return pruned_path
+```
+
 
 
 
