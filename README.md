@@ -63,6 +63,8 @@ To run the simulator, from the terminal and inside the 3DMotion planning directo
 **python motion_planning.py latitude longitude**
 
 Where latitude and longitude are the desired geodetic coorinates. Ex:
+![Image of terminal](https://github.com/lorenzoajt/3DMotionPlanning/blob/master/misc/terminalExample.png)
+
 
 
 ## Implementing the Path Planning Algorithm
