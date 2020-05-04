@@ -5,7 +5,7 @@ from enum import Enum, auto
 
 import numpy as np
 
-from planning_utils import a_star, heuristic, create_grid, prune_path 
+from planning_utils import a_star, heuristic, create_grid, prune_path
 from udacidrone import Drone
 from udacidrone.connection import MavlinkConnection
 from udacidrone.messaging import MsgID
@@ -154,8 +154,7 @@ class MotionPlanning(Drone):
         #grid_goal = (grid_start[0] + 10, grid_start[1] + 10)
         # grid_goal = (grid_start[0] + 10, grid_start[1] + 10)
         # TODO: adapt to set goal as latitude / longitude position and convert
-        #Here You can set your desired latitude and longitude
-        geo_grid_goal = (-122.396260, 37.793970,  0.0)
+        geo_grid_goal = (args.latitude, args.longitude, 0.0)
         goal_ned = global_to_local(geo_grid_goal, home_pos)
         goal = (goal_ned[0]-north_offset, goal_ned[1]-east_offset)
         print('goal: ', goal)
@@ -196,6 +195,8 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('--port', type=int, default=5760, help='Port number')
     parser.add_argument('--host', type=str, default='127.0.0.1', help="host address, i.e. '127.0.0.1'")
+    parser.add_argument('latitude', help="Latitude", type=float)
+    parser.add_argument('longitude', help="Longitude", type=float)
     args = parser.parse_args()
 
     conn = MavlinkConnection('tcp:{0}:{1}'.format(args.host, args.port), timeout=60)
