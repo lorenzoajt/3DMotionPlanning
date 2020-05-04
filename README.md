@@ -57,6 +57,14 @@ print(waypoints)
 
 ![Image of first path](https://github.com/lorenzoajt/3DMotionPlanning/blob/master/misc/first.png)
 
+## How to run
+To run the simulator, from the terminal and inside the 3DMotion planning directory, type: 
+
+**python motion_planning.py latitude longitude**
+
+Where latitude and longitude are the desired geodetic coorinates. Ex:
+
+
 ## Implementing the Path Planning Algorithm
 1. Here you should read the first line of the csv file, extract lat0 and lon0 as floating point values and use the self.set_home_position() method to set global home. The method used was: 
 ```python
@@ -86,10 +94,10 @@ grid_start = (int(start[0]), int(start[1]))
 
 4. Set goal position as some arbitrary position on the grid given any geodetic coordinates (latitude, longitude)
 
-:rotating_light: **Here you can set geo_grid_goal to any latitude/longitude coordinate** :rotating_light:	
+:rotating_light: **Here you can set geo_grid_goal to any latitude/longitude coordinate using command line arguments ** :rotating_light:	
 
 ```python
-geo_grid_goal = (-122.397545, 37.793745,  0.0)
+geo_grid_goal = (args.latitude, args.longitude, 0.0)
 goal_ned = global_to_local(geo_grid_goal, home_pos)
 goal = (goal_ned[0]-north_offset, goal_ned[1]-east_offset)
 grid_goal = (int(goal[0]), int(goal[1]))
